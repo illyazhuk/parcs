@@ -4,25 +4,85 @@ import java.util.Random;
 import parcs.*;
 
 public class Algo implements AM {
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Random;
+import parcs.*;
 
- 	boolean[] primes;
-	
-    public Eratosfen(int n) {
-        primes=new boolean[n+1];
-    }
-	
-   public void fillSieve() {
-        Arrays.fill(primes, true);
-        primes[0] = false;
-        primes[1] = false;
-        for (int i = 2; i < primes.length; ++i) {
-            if (primes[i]) {
-                for (int j = 2; i * j < primes.length; ++j) {
-                    primes[i * j] = false;
-                }
-            }
+public class Algo implements AM {
+    private final static BigInteger ZERO = new BigInteger("0");
+    private final static BigInteger ONE  = new BigInteger("1");
+    private final static BigInteger TWO  = new BigInteger("2");
+    private final static BigInteger THREE  = new BigInteger("3");
+    private final static BigInteger FOUR  = new BigInteger("4");
+    private final static BigInteger FIVE  = new BigInteger("5");
+    private final static BigInteger EIGHT  = new BigInteger("8");
+
+        /** Function to calculate jacobi (a/b) **/
+    public BigInteger Jacobi(BigInteger a, BigInteger b)
+    {
+        if (b.compareTo(ZERO) <= 0 || b.mod(TWO).equals(ZERO))
+            return ZERO;
+        BigInteger j = ONE;
+        if (a.compareTo(ZERO) < 0)
+        {
+            a = ZERO.subtract(a);
+            if (b.mod(FOUR).equals(THREE))
+                j = ZERO.subtract(j);
         }
+        while (!a.equals(ZERO))
+        {
+            while (a.mod(TWO).equals(ZERO))
+            {
+                a = a.divide(TWO);
+                if (b.mod(EIGHT).equals(THREE) || b.mod(EIGHT).equals(FIVE))
+                    j = ZERO.subtract(j);
+            }
+
+            BigInteger temp = a;
+            a = b;
+            b = temp;
+
+            if (a.mod(FOUR).equals(THREE) && b.mod(FOUR).equals(THREE))
+                j = ZERO.subtract(j);
+            a = a.mod(b);
+        }
+        if (b.equals(ONE))
+            return j;
+        return ZERO;
     }
+    /** Function to check if prime or not **/
+    public static BigInteger getRandomBigInteger() {
+        Random rand = new Random();
+        BigInteger result = new BigInteger(100, rand);
+        return result;
+    }
+
+        public boolean isPrime(BigInteger n, int iteration)
+    {
+        /** base case **/
+        if (n.equals(ZERO) || n.equals(ONE))
+            return false;
+        /** base case - 2 is prime **/
+        if (n.equals(TWO))
+            return true;
+        /** an even number other than 2 is composite **/
+        if (n.mod(TWO).equals(ZERO))
+            return false;
+
+        Random rand = new Random();
+        for (int i = 0; i < iteration; i++)
+        {
+            BigInteger r = getRandomBigInteger();
+            BigInteger a = r.mod(n.subtract(ONE)).add(ONE);
+            BigInteger jacobian = (n.add(Jacobi(a, n))).mod(n);
+            BigInteger mod = a.modPow(n.subtract(ONE).divide(TWO), n);
+            if(jacobian.equals(ZERO) || !mod.equals(jacobian))
+                return false;
+        }
+        return true;
+    }
+	
     public void run(AMInfo info) {
         int result = 0;
 	BigInteger N = (BigInteger) info.parent.readObject();
@@ -35,9 +95,7 @@ public class Algo implements AM {
         p.execute("Algo");
         c.write(N);
         c.write(It);
-	Eratosfen(int 100);
-	    for (int i=0;i<primes.length;++i)
-		    if (primes[i]==1) result++;
+
         info.parent.write(result);
     }
 }
