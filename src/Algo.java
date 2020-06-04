@@ -4,12 +4,6 @@ import java.util.Random;
 import parcs.*;
 
 public class Algo implements AM {
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Random;
-import parcs.*;
-
-public class Algo implements AM {
     private final static BigInteger ZERO = new BigInteger("0");
     private final static BigInteger ONE  = new BigInteger("1");
     private final static BigInteger TWO  = new BigInteger("2");
